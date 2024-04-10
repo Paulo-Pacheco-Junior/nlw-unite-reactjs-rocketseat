@@ -4,15 +4,49 @@ import { TableCell } from './table/table-cell'
 import { TableRow } from './table/table-row'
 import { Table } from './table/table'
 import { IconButton } from './icon-button'
+import { attendees } from '../data/attendees'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/pt-br'
+import { ChangeEvent, useState } from 'react'
+
+dayjs.extend(relativeTime)
+dayjs.locale('pt-br')
 
 export function AttendeeList() {
+  
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+
+  const totalPages = Math.ceil(attendees.length/10);
+
+  function onInputChange(e: ChangeEvent<HTMLInputElement>) {
+    setSearch(e.target.value);
+  }
+
+  function goToFirstPage() {
+    setPage(1);
+  }
+
+  function goToLastPage() {
+    setPage(totalPages);
+  }
+
+  function goToPreviousPage() {
+    setPage(page => page - 1);
+  }
+
+  function goToNextPage() {
+    setPage(page => page + 1);
+  }
+
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex gap-3 items-center'>
           <h1 className='font-bold text-2xl'>Participantes</h1>
           <div className='flex gap-3 items-center px-3 py-1.5 text-sm w-72 border border-white/10 rounded-lg'>
             <Search className='size-4 text-emerald-300'/>
-            <input className='flex-1 bg-transparent outline-none text-zinc-300' placeholder='Buscar participante...'/>
+            <input onChange={onInputChange} value={search} className='flex-1 bg-transparent outline-none text-zinc-300' placeholder='Buscar participante...'/>
           </div>
       </div>
       <Table>
@@ -29,51 +63,51 @@ export function AttendeeList() {
           </TableRow>
         </thead>
         <tbody>
-          {Array.from({ length:7 }).map((_,i) => {
+          {attendees.slice( (page - 1) * 10, page * 10 ).map((attendee) => {
             return (
-              <TableRow key={i} className='border-b border-white/10 hover:bg-white/5'>
+              <TableRow key={attendee.id} className='border-b border-white/10 hover:bg-white/5'>
                 <TableCell> 
                   <input type='checkbox'/>
                 </TableCell>
                 <TableCell>
-                  52716
+                  {attendee.id}
                 </TableCell>
                 <TableCell>
                   <div className='flex flex-col gap-1'>
-                    <span className='font-semibold text-white'>Paulo Pacheco Júnior</span>
-                    <span>paulojrgyn88@gmail.com</span>
+                    <span className='font-semibold text-white'>{attendee.name}</span>
+                    <span>{attendee.email}</span>
                   </div>
                 </TableCell>
-                <TableCell>7 dias atrás</TableCell>
-                <TableCell>7 dias atrás</TableCell>
+                <TableCell>{dayjs().to(dayjs(attendee.subscribedAt))}</TableCell>
+                <TableCell>{dayjs().to(dayjs(attendee.checkedInAt))}</TableCell>
                 <TableCell>
-                  <IconButton transparent={true}>
+                  <IconButton transparent>
                     <Ellipsis className='size-4'/>
                   </IconButton>
                 </TableCell>
               </TableRow>
             )
           })}
-        </tbody>  
+        </tbody> 
         <tfoot>
-          <tr>
+          <tr>           
             <TableCell colSpan={3}>
-              Mostrando 10 de 228 itens
+              Mostrando 10 de {attendees.length} itens
             </TableCell>
             <TableCell className='text-right' colSpan={3}>
               <div className='inline-flex items-center gap-8'>
-                <span>1 de 11 páginas</span>
+                <span>{page} de {totalPages} páginas</span>
                 <div className='flex gap-1.5'>
-                  <IconButton>
+                  <IconButton onClick={goToFirstPage} disabled={page === 1}>
                     <ChevronsLeft className='size-4'/>
                   </IconButton>
-                  <IconButton>
+                  <IconButton onClick={goToPreviousPage} disabled={page === 1}>
                     <ChevronLeft className='size-4'/>
                   </IconButton>
-                  <IconButton>
+                  <IconButton onClick={goToNextPage} disabled={page === totalPages}>
                     <ChevronRight className='size-4'/>
                   </IconButton>
-                  <IconButton>
+                  <IconButton onClick={goToLastPage} disabled={page === totalPages}>
                     <ChevronsRight className='size-4'/>
                   </IconButton>   
                 </div>
