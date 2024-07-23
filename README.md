@@ -2,7 +2,6 @@
 Desenvolvida durante a Nlw Unite da <a href="https://www.rocketseat.com.br/" target="_blank">Rocketseat</a> a pass.in é uma ferramenta de gerenciamento de participantes de eventos.
 
 ## Funcionalidades
-- Persistência de estados de URL (URL State)
 - Painel de controle para os organizadores
 - Visualização de data de cadastro e check-in 
 - Busca/Filtragem de usuários em tempo real do banco de dados
